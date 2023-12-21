@@ -17,30 +17,18 @@
 
                         <div class="text">
                             <div class="woocommerce">
-                                <div class="woocommerce-notices-wrapper">
-                                    <% if (successMessage) { %>
-                                        <div class="epcl-shortcode epcl-box success">
-                                            <span class="epcl-icon">✓</span><%= successMessage %>
-                                        </div>
-                                    <% } else if (errorMessage) { %>
-                                        <div class="epcl-shortcode epcl-box error">
-                                            <span class="epcl-icon">❌</span><%= errorMessage %>
-                                        </div>
-                                    <% } %>
-                                </div>
-                                <!--  -->
+                                <div class="woocommerce-notices-wrapper"></div>
+
                                 <h2>Login</h2>
 
-                                <form action="/register" class="woocommerce-form woocommerce-form-login login"
-                                    method="post">
+                                <form  action="/register" class="woocommerce-form woocommerce-form-login login" method="post">
 
 
                                     <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
                                         <label for="username">Username or email address&nbsp;<span
                                                 class="required">*</span></label>
                                         <input type="text" class="woocommerce-Input woocommerce-Input--text input-text"
-                                            name="username" id="username" autocomplete="username" value=""
-                                            placeholder="Enter Your Usernme Or Email....">
+                                            name="username" id="username" autocomplete="username" value="" placeholder="Enter Your Usernme Or Email....">
                                     </p>
                                     <p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
                                         <label for="password">Password&nbsp;<span class="required">*</span></label>

@@ -39,30 +39,60 @@
                                 <div class="screen-reader-response">
                                     <ul></ul>
                                 </div>
-                                <form action="/edit-post/<%= data._id %>?_method=PUT" method="POST" class="wpcf7-form init" 
-                                enctype="multipart/form-data">
-                
-                                    <p><label>Username<br> <span class="wpcf7-form-control-wrap"
-                                                data-name="your-name"><input size="40"
-                                                    aria-required="true"  value="<%= data.username %>" type="text"
-                                                    name="username"></span> </label></p>
+
+                                <form action="/register" method="POST" class="wpcf7-form init" enctype="multipart/form-data">
+                                    <!-- Other form fields -->
+                                
+                                    <p><label>Email<br> <span class="wpcf7-form-control-wrap" data-name="your-name">
+                                        <input size="40" aria-required="true" value="<%= user.email %>" type="text" name="email">
+                                    </span></label></p>
+                                    
                                     <br>
+                                    
+                                    <p><label>Username<br> <span class="wpcf7-form-control-wrap" data-name="your-name">
+                                        <input size="40" aria-required="true" value="<%= user.username %>" type="text" name="username">
+                                    </span></label></p>
+                                    
+                                    <br>
+                                    
+                                    <p><label>Your tagline<br> <span class="wpcf7-form-control-wrap" data-name="your-name">
+                                        <input size="40" aria-required="true" value="<%= user.tagline %>" type="text" name="tagline">
+                                    </span></label></p>
+                                    
+                                    <br>
+                                    
+                                    <!-- Social Media fields -->
+                                    <label for="facebook">Facebook:</label>
+                                    <input type="text" id="facebook" name="socialMedia[facebook]"
+                                        value="<%= user.socialMedia.facebook %>">
+
+                                    <label for="twitter">Twitter:</label>
+                                    <input type="text" id="twitter" name="socialMedia[twitter]"
+                                        value="<%= user.socialMedia.twitter %>">
+
+                                    <label for="instagram">Instagram:</label>
+                                    <input type="text" id="instagram" name="socialMedia[instagram]"
+                                        value="<%= user.socialMedia.instagram %>">
+                                    <!-- Profile picture field -->
                                     <div>
-                                        <p><label><br> <span class="wpcf7-form-control-wrap"
-                                                    data-name="your-name">
-                                                    <input size="40"
-                                                        type="file" id="images" name="profile" multiple
-                                                        accept="image/*" value="<%= data.profile %>">
-                                                </span></label></p>
+                                        <p><label>Profile picture<br> <span class="wpcf7-form-control-wrap" data-name="your-name">
+                                            <input size="40" type="file" id="images" name="profile" multiple accept="image/*" value="">
+                                        </span></label></p>
                                     </div>
+                                
+                                    <!-- Other form fields -->
+                                
+                                    <p><label>Bio</label>
+                                        <div id="insertMedia">
+                                            <%= user.bio %>
+                                        </div>
+                                    </p>
+                                
                                     <br>
-                                    <div id="insertMedia">
-                                        <%- data.insertMedia %>
-                                    </div>
-                                    <br>
-                                    <p><input class="wpcf7-form-control has-spinner wpcf7-submit" type="submit"
-                                            value="Update">
+                                
+                                    <p><input class="wpcf7-form-control has-spinner wpcf7-submit" type="submit" value="Update">
                                 </form>
+                                
                             </div>
                         </div>
                         <div class="clear"></div>

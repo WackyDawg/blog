@@ -36,6 +36,8 @@ router.get('/', async (req, res) => {
         const hasNextPage = nextPage <= totalPages;
         const allTags = await Post.distinct('tags');
 
+        const username = data.length > 0 && data[0].author && data[0].author.email ? data[0].author.email.split('@')[0] : '';
+
 
         res.render("index", {
             locals,
@@ -45,12 +47,14 @@ router.get('/', async (req, res) => {
             nextPage: hasNextPage ? nextPage : null,
             totalPages: totalPages,
             allTags,
-            selectedTags: tags
+            selectedTags: tags,
+            username: username  // Pass the username to the template
         });
     } catch (error) {
         console.log(error);
     }
 });
+
 
 router.post('/search', async (req, res) => {    
     try {

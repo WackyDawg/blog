@@ -18,6 +18,13 @@ const PostSchema = new Schema({
     images: [{
         type: String,
     }],
+    author: {
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+        },
+        name: String,
+    },
     views: {
         type: Number,
         default: 0,

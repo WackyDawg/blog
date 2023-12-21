@@ -235,15 +235,26 @@ router.post('/add-post', authMiddleware, upload.array('images', 5), async (req, 
         // Use destructuring to get specific form fields
         const { title, insertMedia } = req.body;
 
+        // Retrieve user information
+        const userId = req.userId;
+        const user = await User.findById(userId);
 
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
 
-        //const tagsArray = tags ? tags : [];
+        // Get the user's name
+        const authorName = user.username;
 
         const newPost = new Post({
             title: title,
             tags: tags,
             images: images,
             insertMedia: insertMedia,
+            author: {
+                id: userId,
+                name: authorName,
+            },
         });
 
         await Post.create(newPost);
@@ -254,6 +265,7 @@ router.post('/add-post', authMiddleware, upload.array('images', 5), async (req, 
         res.status(500).send("Internal Server Error");
     }
 });
+
 
 
 

@@ -88,13 +88,18 @@
                                         
                                         
                                         <footer class="bottom">
-                                            <div class="meta bottom"> <a
+                                            <div class="meta bottom">
+                                                <% if (post.author && post.author.name) { %>
+                                                <a
                                                     href="https://themes.estudiopatagon.com/wordpress/groovy/author/admin/"
                                                     title="Author: Jonathan Doe"
                                                     class="author meta-info hide-on-mobile hide-on-tablet hide-on-desktop-sm loaded">
                                                     <span class="author-image cover lazy loaded"
                                                         style="background-image: url(&quot;https://themes.estudiopatagon.com/wordpress/groovy/wp-content/uploads/2023/01/avatar-1.jpg&quot;);"></span>
-                                                    <span class="author-name">Jonathan Doe</span> </a> <a
+                                                    <span class="author-name"><%= post.author.name %></span> 
+                                                    </a> 
+                                                <% } %>
+                                                    <a
                                                     href="/article/<%= post._id %>"
                                                     class="continue-reading epcl-button white">Continue Reading</a>
                                                 <div class="clear"></div>
