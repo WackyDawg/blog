@@ -9,7 +9,7 @@ const expressLayout = require('express-ejs-layouts')
 
 const connectDB = require('./server/config/db')
 const app = express();
-app.use('/uploads', express.static('uploads'));
+app.use('./uploads', express.static('uploads'));
 app.use(express.static('public'))
 
 app.use(expressLayout);
