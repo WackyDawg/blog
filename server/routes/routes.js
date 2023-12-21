@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const stripTags = require('strip-tags');
 const fs = require('fs');
 const path = require('path');
-const mongoose  = require('mongoose')
+const mongoose = require('mongoose')
 
 
 
@@ -30,7 +30,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-  
+
 const jwtSecret = process.env.JWT_SECRET;
 
 
@@ -38,7 +38,9 @@ const adminLayout = '../views/layouts/admin'
 
 //multer Configuration 
 
-router.get('/admin', async (req, res) => {
+
+
+router.get('/login', async (req, res) => {
     try {
         const locals = {
             title: "",
@@ -46,14 +48,33 @@ router.get('/admin', async (req, res) => {
         }
         const allTags = await Post.distinct('tags');
         const latestPosts = await Post.find().sort({ createdAt: -1 }).limit(10);
+        const errorMessage = req.query.errorMessage || '';
+        const successMessage = req.query.successMessage || '';
 
-
-        res.render('admin/index', { locals, allTags, latestPosts, layout: adminLayout })
+        res.render('login', { locals, allTags, latestPosts, errorMessage, successMessage, layout: adminLayout })
     } catch (error) {
         console.log(error);
     }
 })
 
+router.get('/signup', async (req, res) => {
+    try {
+        const locals = {
+            title: "",
+            description: ""
+        }
+        const allTags = await Post.distinct('tags');
+        const latestPosts = await Post.find().sort({ createdAt: -1 }).limit(10);
+        const errorMessage = req.query.errorMessage || '';
+        const successMessage = req.query.successMessage || '';
+
+
+
+        res.render('register', { locals, allTags, latestPosts, errorMessage, successMessage , layout: adminLayout })
+    } catch (error) {
+        console.log(error);
+    }
+})
 // router.get('/my-profile/:id', async (req, res) => {
 //     try {
 //         const allTags = await Post.distinct('tags');
@@ -77,7 +98,7 @@ router.get('/admin', async (req, res) => {
 //         res.status(500).send('Internal Server Error');
 //     }
 // });
-  
+
 
 //check Login
 const authMiddleware = (req, res, next) => {
@@ -95,10 +116,27 @@ const authMiddleware = (req, res, next) => {
     }
 }
 
+
+router.get('/admin', authMiddleware, async (req, res) => {
+    try {
+        const locals = {
+            title: "",
+            description: ""
+        }
+        const allTags = await Post.distinct('tags');
+        const latestPosts = await Post.find().sort({ createdAt: -1 }).limit(10);
+
+
+        res.render('admin/dashboard', { locals, allTags, latestPosts, layout: adminLayout })
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 // Add a new route for user profile
 router.get('/profile', authMiddleware, async (req, res) => {
     try {
-        const userId = req.userId; 
+        const userId = req.userId;
         const allTags = await Post.distinct('tags');
         const latestPosts = await Post.find().sort({ createdAt: -1 }).limit(10);
 
@@ -109,8 +147,8 @@ router.get('/profile', authMiddleware, async (req, res) => {
             return res.status(404).send('User not found');
         }
 
-        
-        res.render('admin/profile', { user, allTags,latestPosts });
+
+        res.render('admin/profile', { user, allTags, latestPosts });
     } catch (error) {
         console.log(error);
         res.status(500).send('Internal Server Error');
@@ -175,31 +213,10 @@ router.put('/edit-post/:id', authMiddleware, upload.array('images', 5), async (r
 });
 
 
- 
 
 
-// Login Check
-router.post('/admin', async (req, res) => {
-    try {
-        const { username, password } = req.body;
-        //const allTags = await Post.distinct('tags');
-        //const latestPosts = await Post.find().sort({ createdAt: -1 }).limit(10);
 
-        const user = await User.findOne({ username });
-        if (!user) {
-            return res.status(401).json({ message: 'Invalid Credentials' })
-        }
-        const isPasswordValid = await bcrypt.compare(password, user.password)
-        if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Invalid Credentials' })
-        }
-        const token = jwt.sign({ userId: user._id }, jwtSecret);
-        res.cookie('token', token, { httpOnly: true })
-        res.redirect('/dashboard',)
-    } catch (error) {
-        console.log(error);
-    }
-})
+
 
 router.get('/dashboard', authMiddleware, async (req, res) => {
     const allTags = await Post.distinct('tags');
@@ -218,7 +235,7 @@ router.post('/add-post', authMiddleware, upload.array('images', 5), async (req, 
         // Use destructuring to get specific form fields
         const { title, insertMedia } = req.body;
 
-        
+
 
         //const tagsArray = tags ? tags : [];
 
@@ -275,19 +292,48 @@ router.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         try {
-            const user = await User.create({ username, password: hashedPassword })
-            res.status(201).json({ message: "User Created Successfully", user })
+            // Check if there are any users in the database
+            const existingUsersCount = await User.countDocuments({});
+            
+            const role = existingUsersCount === 0 ? 'admin' : 'user';
+            const user = await User.create({ username, password: hashedPassword, role });
+
+            res.status(201).redirect('/login?successMessage=User created successfully');
         } catch (error) {
             if (error.code === 11000) {
-                res.status(409).json({ message: 'User already exists' })
+                res.status(409).redirect('/signup?errorMessage=User already exists');
             } else {
-                res.status(500).json({ message: "Internal server error " })
+                res.status(500).redirect('/signup?errorMessage=Internal server error');
             }
         }
-        res.redirect('/admin');
+    } catch (error) {
+        console.log(error);
+        res.status(500).redirect('/signup?errorMessage=Internal server error');
+    }
+});
+
+
+router.post('/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        //const allTags = await Post.distinct('tags');
+        //const latestPosts = await Post.find().sort({ createdAt: -1 }).limit(10);
+
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(401).redirect('/login?errorMessage=Invalid Credentials');
+        }
+        const isPasswordValid = await bcrypt.compare(password, user.password)
+        if (!isPasswordValid) {
+            return res.status(401).redirect('/login?errorMessage=Invalid Credentials');
+        }
+        const token = jwt.sign({ userId: user._id }, jwtSecret);
+        res.cookie('token', token, { httpOnly: true })
+        res.redirect('/dashboard',)
     } catch (error) {
         console.log(error);
     }
 })
+
 
 module.exports = router;
